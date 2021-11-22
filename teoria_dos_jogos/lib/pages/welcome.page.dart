@@ -33,9 +33,11 @@ class _WelcomePageState extends State<WelcomePage> {
             },
             pageBuilder: (context, Animation<double> animation,
                     Animation<double> secondaryAnimation) =>
-                ChooseGamePage(
-                  title: "",
-                )),
+                Container()
+            //     ChooseGamePage(
+            //   title: "",
+            // ),
+            ),
       );
     });
     super.initState();

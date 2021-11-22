@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:teoria_dos_jogos/classes/maxLength.dart';
 import 'package:teoria_dos_jogos/classes/user.dart';
+import 'package:teoria_dos_jogos/prisoners_dilemma/store/dilemmaround_store.dart';
 
 class Database {
   static validateKey(String key) async {
@@ -79,6 +80,40 @@ class Database {
     });
     var resBody = jsonDecode(res.body.toString());
     return resBody;
+  }
+
+  static insertRounds(List<DilemmaRound> rounds, String userId) async {
+    var i = 0;
+    int cooperate = 0, compete = 0;
+    for (i = 0; i < rounds.length; i++) {
+      if (rounds[i].userChoice == 0) {
+        cooperate++;
+      } else {
+        compete++;
+      }
+      int round = i + 1;
+      String theUrl = 'https://ccompjr.com.br/BeGapp/dilemma/InsertRound.php';
+      var res = await http.post(Uri.parse(theUrl), headers: {
+        "Accept": "application/json"
+      }, body: {
+        "round": round.toString(),
+        "computer": rounds[i].oponentChoice.toString(),
+        "userChoice": rounds[i].userChoice.toString(),
+        "userId": userId.toString(),
+        "cooperate": cooperate.toString(),
+        "defect": compete.toString()
+      });
+      String s = "rodada: " +
+          round.toString() +
+          " pc: " +
+          rounds[i].oponentChoice.toString() +
+          " usuario: " +
+          rounds[i].userChoice.toString() +
+          " userid: " +
+          userId +
+          "\n";
+      var resBody = jsonDecode(res.body);
+    }
   }
 
   static getDilemmaVariables() async {

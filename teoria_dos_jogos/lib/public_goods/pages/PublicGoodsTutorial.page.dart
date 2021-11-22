@@ -83,6 +83,8 @@ class _PublicGoodsTutorialPageState extends State<PublicGoodsTutorialPage> {
 
   @override
   Widget build(BuildContext context) {
+    var appLanguage = Provider.of<AppLanguage>(context);
+
     // var appLanguage = Provider.of<AppLanguage>(context);
     //btnIsVisible=true;
     // i=26;

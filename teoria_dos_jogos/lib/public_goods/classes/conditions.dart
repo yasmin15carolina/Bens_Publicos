@@ -165,7 +165,7 @@ class Conditions {
           roundsData![roundsData!.length - variables!.waitingRounds].suspended;
       List<RoundData> toRemove = [];
       roundsData!.forEach((r) {
-        if ((!r.distribution || r.earning <= -1 || r.investment == null)) {
+        if ((!r.distribution || r.earning <= -1 || r.investment == -1)) {
           lostTime = true;
           toRemove.add(r); //a rodada perdida não conta
         }

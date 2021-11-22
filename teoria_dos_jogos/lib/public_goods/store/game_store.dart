@@ -14,6 +14,8 @@ import 'package:teoria_dos_jogos/classes/time_taken_tutorial_pg.dart';
 import 'package:teoria_dos_jogos/classes/user.dart';
 import 'package:teoria_dos_jogos/public_goods/classes/conditions.dart';
 import 'package:teoria_dos_jogos/public_goods/classes/publicGoodsVariables.dart';
+import 'package:teoria_dos_jogos/public_goods/pages/distributionTutorial.page.dart';
+import 'package:teoria_dos_jogos/public_goods/pages/electionTutorial.page.dart';
 import 'package:teoria_dos_jogos/public_goods/pages/messagePage.dart';
 import 'package:teoria_dos_jogos/public_goods/store/distribution_store.dart';
 import 'package:teoria_dos_jogos/public_goods/store/election_store.dart';
@@ -29,7 +31,7 @@ class Game = _GameBase with _$Game;
 abstract class _GameBase with Store {
   final PublicGoodsVariables
       variables; // = new PublicGoodsVariables("default",10,10,3,10,0,5,"default","jogo padrão");
-  bool armazenarBD = true;
+  bool armazenarBD = false;
   final User user;
   PGTimeTutorial? timeTutorial = new PGTimeTutorial();
   final List<PopUpMessagePublicGoods>? messages;
@@ -52,8 +54,8 @@ abstract class _GameBase with Store {
     rd.id = rounds.length + 1;
     rd.round = roundData.round;
     rd.earning = roundData.earning;
-    rd.investment =
-        (roundData.investment == -1) ? null as int : roundData.investment;
+    rd.investment = (roundData.investment == -1)
+        ? -1 /*null as int*/ : roundData.investment;
     rd.playersEarning = roundData.playersEarning;
     rd.playersInvestiment = roundData.playersInvestiment;
     rd.positionToken = roundData.positionToken;
@@ -70,8 +72,8 @@ abstract class _GameBase with Store {
     rd.timeRound = roundData.timeRound;
     rounds.add(rd);
     roundData.timeRound = new PGTimeRound();
-    if (rd.investment != null) contributions.add(rd.investment);
-    if (rd.distribution && rd.earning > -1 && rd.investment != null)
+    if (rd.investment != -1) contributions.add(rd.investment);
+    if (rd.distribution && rd.earning > -1 && rd.investment != -1)
       distributions.add(((rd.earning / rd.rib!) * 100).toInt());
 
     Conditions conditions = new Conditions(
@@ -195,7 +197,7 @@ abstract class _GameBase with Store {
         showGraphic();
     } else if (!roundData.suspended && variables.stable > 0)
       conditions.checkStability(
-          !(rd.distribution && rd.earning > -1 && rd.investment != null));
+          !(rd.distribution && rd.earning > -1 && rd.investment != -1));
 
     if (roundData.suspended) nextRound();
   }
@@ -283,6 +285,18 @@ abstract class _GameBase with Store {
                     Navigator.of(context).pop();
                     return true;
                   }),
+              // actions: [
+              //   FlatButton(
+              //     onPressed: (){
+              //       Navigator.of(context).pop();
+              //       Navigator.of(context).pop();
+              //       Navigator.of(context).push(
+              //        MaterialPageRoute(builder: (context)=> GraphicPagePG(gameRounds: rounds,variables: variables,))
+              //      );
+              //     },
+              //     child: Text(AppLocalizations.of(context).translate('seeResult'),style: TextStyle(fontSize: MediaQuery.of(context).size.height/20),)),
+
+              // ],
             ));
   }
 
@@ -297,7 +311,7 @@ abstract class _GameBase with Store {
     int suspended = r.suspended ? 1 : 0;
     int distribution = r.distribution ? 1 : 0;
     int votes = r.election ? r.votes : 0;
-    int investment = r.investment == null ? -1 : r.investment;
+    int investment = r.investment == -1 ? -1 : r.investment;
     String query =
         "INSERT INTO `public_goods_rounds`(`userId`, `round`, `investment`, `positionToken`, `earning`, `rib`, `wallet`, `distribution`, `suspended`, `electionCount`, `votes`) VALUES (";
     query +=
@@ -413,6 +427,24 @@ abstract class _GameBase with Store {
                   fontSize: Resize.getHeight(context) / 6, onEndAnimation: () {
                 Navigator.pop(context);
                 clearLists();
+                if (roundData.distribution && roundData.electionCount == -1)
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => DistributionTutorial(variables, () {
+                                roundData.round = 0;
+                                nextRound();
+                              }, timeTutorial!)));
+                else
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => ElectionTutorial(variables, () {
+                                //callElections();
+                                roundData.round = 0;
+                                nextRound();
+                                roundData.election = true;
+                              }, timeTutorial!)));
               }));
     }
   }

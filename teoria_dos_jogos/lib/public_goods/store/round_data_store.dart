@@ -9,8 +9,8 @@ class RoundData = _RoundDataBase with _$RoundData;
 
 abstract class _RoundDataBase with Store {
   PGTimeRound timeRound = new PGTimeRound();
-  bool distribution = false;
-  bool election = false;
+  bool distribution = true;
+  bool election = true;
   int electionId;
   int votes = 0;
   int suspentions = 0;

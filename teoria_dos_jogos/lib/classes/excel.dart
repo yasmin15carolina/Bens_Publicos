@@ -4,6 +4,7 @@ import 'package:path/path.dart';
 import 'package:excel/excel.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:teoria_dos_jogos/app_localizations.dart';
+import 'package:teoria_dos_jogos/prisoners_dilemma/store/dilemmaround_store.dart';
 import 'package:teoria_dos_jogos/public_goods/classes/publicGoodsVariables.dart';
 import 'package:teoria_dos_jogos/public_goods/store/round_data_store.dart';
 
@@ -11,6 +12,33 @@ class Excelfile {
   var excel = Excel.createExcel();
   var context;
   Excelfile(this.context);
+
+  createSheetPrisonerDilemma(List<DilemmaRound> rounds, String algorithm) {
+    Sheet sheet = excel[AppLocalizations.of(context).translate('dilemma')];
+
+    List<String> titleList = [
+      AppLocalizations.of(context).translate('round'),
+      AppLocalizations.of(context).translate('cooperate'),
+      AppLocalizations.of(context).translate('defect'),
+      "Algoritimo"
+    ];
+
+    sheet.insertRowIterables(titleList, 0);
+
+    int cooperate = 0, defect = 0;
+    rounds.forEach((element) {
+      (element.userChoice == 0) ? cooperate++ : defect++;
+      List<String> roundRow = [
+        element.round.toString(),
+        cooperate.toString(),
+        defect.toString(),
+        algorithm
+      ];
+      sheet.insertRowIterables(roundRow, element.round);
+    });
+    excel.setDefaultSheet(AppLocalizations.of(context).translate('dilemma'));
+    saveExcel(AppLocalizations.of(context).translate('dilemma'));
+  }
 
   createSheetPublicGoods(
       List<RoundData> gameRounds, PublicGoodsVariables goodsVariables) {

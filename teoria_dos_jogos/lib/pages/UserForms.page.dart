@@ -8,6 +8,8 @@ import 'package:teoria_dos_jogos/app_localizations.dart';
 import 'package:teoria_dos_jogos/classes/Database.dart';
 import 'package:teoria_dos_jogos/classes/maxLength.dart';
 import 'package:teoria_dos_jogos/classes/user.dart';
+import 'package:teoria_dos_jogos/prisoners_dilemma/pages/game.page.dart';
+import 'package:teoria_dos_jogos/prisoners_dilemma/pages/tutorial.page.dart';
 import 'package:teoria_dos_jogos/public_goods/pages/PublicGoodsTutorial.page.dart';
 import 'package:universal_platform/universal_platform.dart';
 import 'package:teoria_dos_jogos/DropDownField.dart';
@@ -377,8 +379,12 @@ class _UserFormsState extends State<UserForms> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => PublicGoodsTutorialPage(
-                                    user, widget.variables)));
+                                builder: (context) =>
+                                    (widget.game == "PrisonerDilemma")
+                                        ? DilemmaTutorialPage(
+                                            user, widget.variables)
+                                        : PublicGoodsTutorialPage(
+                                            user, widget.variables)));
                       }
                     },
                     child: Text(AppLocalizations.of(context).translate('next'),
